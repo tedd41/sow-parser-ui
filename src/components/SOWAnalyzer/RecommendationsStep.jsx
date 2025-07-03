@@ -1,0 +1,103 @@
+// File: components/SOWAnalyzer/RecommendationsStep.jsx
+import React from "react";
+import { User, CheckCircle, AlertCircle, Sparkles } from "lucide-react";
+
+const RecommendationsStep = ({ recommendations, onReset }) => {
+  const employees = recommendations?.recommendations || [];
+  const total = recommendations?.summary?.initial_shortlisted_candidates || 0;
+
+  return (
+    <div className="max-w-6xl mx-auto p-6">
+      <div className="mb-6">
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">
+          Employee Recommendations
+        </h2>
+        <p className="text-gray-600">
+          Found {employees.length} recommended employees from {total} initially shortlisted candidates
+        </p>
+      </div>
+
+      <div className="grid gap-6">
+        {employees.map((employee, index) => (
+          <div
+            key={index}
+            className="bg-white rounded-lg shadow-lg p-6 border-l-4 border-blue-500"
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center space-x-3">
+                <div className="bg-blue-100 rounded-full p-2">
+                  <User className="h-6 w-6 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">{employee.name}</h3>
+                  <div className="flex items-center space-x-4 text-sm text-gray-600">
+                    <span>Rank #{employee.rank}</span>
+                    <span>Match Score: {(employee.match_score * 100).toFixed(0)}%</span>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        employee.recommendation_level === "Highly recommended"
+                          ? "bg-green-100 text-green-800"
+                          : employee.recommendation_level === "Recommended"
+                          ? "bg-blue-100 text-blue-800"
+                          : "bg-yellow-100 text-yellow-800"
+                      }`}
+                    >
+                      {employee.recommendation_level}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6 mb-4">
+              <Strengths
+                title="Key Strengths"
+                icon={<CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5" />}
+                items={employee.key_strengths}
+              />
+              <Strengths
+                title="Concerns"
+                icon={<AlertCircle className="h-4 w-4 text-yellow-500 mr-2 mt-0.5" />}
+                items={employee.concerns}
+              />
+            </div>
+
+            {employee.why_pick && (
+              <div className="bg-gray-50 p-4 rounded-md border border-dashed border-blue-200">
+                <p className="text-sm text-gray-700">
+                  <span className="mr-1 text-blue-600">✨</span>
+                  <strong className="text-blue-800">Why this pick?</strong> {employee.why_pick}
+                </p>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-8 text-center">
+        <button
+          onClick={onReset}
+          className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700"
+        >
+          Analyze Another SOW
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const Strengths = ({ title, icon, items = [] }) => (
+  <div>
+    <h4 className="font-semibold text-gray-900 mb-2">{title}</h4>
+    <ul className="space-y-1">
+      {items.map((item, idx) => (
+        <li key={idx} className="text-sm text-gray-700 flex items-start">
+          {icon}
+          {item}
+        </li>
+      ))}
+    </ul>
+  </div>
+);
+
+export default RecommendationsStep;
