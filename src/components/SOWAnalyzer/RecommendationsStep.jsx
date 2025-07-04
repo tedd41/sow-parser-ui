@@ -1,10 +1,28 @@
 // File: components/SOWAnalyzer/RecommendationsStep.jsx
 import React from "react";
-import { User, CheckCircle, AlertCircle, Sparkles } from "lucide-react";
+import {
+  User,
+  CheckCircle,
+  AlertCircle,
+  Sparkles,
+  Briefcase,
+  Code,
+} from "lucide-react";
 
 const RecommendationsStep = ({ recommendations, onReset }) => {
   const employees = recommendations?.recommendations || [];
   const total = recommendations?.summary?.initial_shortlisted_candidates || 0;
+  const sowData = recommendations?.sow_data || {};
+
+  // Debug logging - remove this after fixing
+  console.log("Full recommendations object:", recommendations);
+  console.log("SOW Data:", sowData);
+  console.log("Practice:", sowData.practice);
+  console.log("Technology:", sowData.technology);
+  console.log(
+    "Should show SOW section?",
+    sowData.practice || sowData.technology
+  );
 
   return (
     <div className="max-w-6xl mx-auto p-6">
@@ -13,10 +31,72 @@ const RecommendationsStep = ({ recommendations, onReset }) => {
           Employee Recommendations
         </h2>
         <p className="text-gray-600">
-          Found {employees.length} recommended employees from {total} initially shortlisted candidates
+          Found {employees.length} recommended employees from {total} initially
+          shortlisted candidates
         </p>
       </div>
 
+      {/* SOW Information Section - Debug Version */}
+      <div className="bg-white rounded-lg shadow-lg p-6 mb-6 border-l-4 border-green-500">
+        <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+          <Briefcase className="h-5 w-5 text-green-600 mr-2" />
+          Project Information 
+        </h3>
+
+        {
+        /* <div className="mb-4 text-sm text-gray-600">
+          <p>SOW Data Keys: {Object.keys(sowData).join(", ")}</p>
+          <p>Practice Value: "{sowData.practice}"</p>
+          <p>Technology Value: {JSON.stringify(sowData.technology)}</p>
+        </div>
+        */
+        }
+
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Practice Section */}
+          <div>
+            <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
+              <Sparkles className="h-4 w-4 text-blue-500 mr-2" />
+              Practice
+            </h4>
+            {sowData.practice ? (
+              <span className="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                {sowData.practice}
+              </span>
+            ) : (
+              <span className="text-gray-500 italic">
+                No practice specified
+              </span>
+            )}
+          </div>
+
+          {/* Technologies Section */}
+          <div>
+            <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
+              <Code className="h-4 w-4 text-purple-500 mr-2" />
+              Technologies
+            </h4>
+            {sowData.technology && sowData.technology.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {sowData.technology.map((tech, index) => (
+                  <span
+                    key={index}
+                    className="inline-block bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium"
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <span className="text-gray-500 italic">
+                No technologies specified
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Employee Recommendations */}
       <div className="grid gap-6">
         {employees.map((employee, index) => (
           <div
@@ -29,10 +109,14 @@ const RecommendationsStep = ({ recommendations, onReset }) => {
                   <User className="h-6 w-6 text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">{employee.name}</h3>
+                  <h3 className="text-xl font-bold text-gray-900">
+                    {employee.name}
+                  </h3>
                   <div className="flex items-center space-x-4 text-sm text-gray-600">
                     <span>Rank #{employee.rank}</span>
-                    <span>Match Score: {(employee.match_score * 100).toFixed(0)}%</span>
+                    <span>
+                      Match Score: {(employee.match_score * 100).toFixed(0)}%
+                    </span>
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${
                         employee.recommendation_level === "Highly recommended"
@@ -52,12 +136,16 @@ const RecommendationsStep = ({ recommendations, onReset }) => {
             <div className="grid md:grid-cols-2 gap-6 mb-4">
               <Strengths
                 title="Key Strengths"
-                icon={<CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5" />}
+                icon={
+                  <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
+                }
                 items={employee.key_strengths}
               />
               <Strengths
                 title="Concerns"
-                icon={<AlertCircle className="h-4 w-4 text-yellow-500 mr-2 mt-0.5" />}
+                icon={
+                  <AlertCircle className="h-4 w-4 text-yellow-500 mr-2 mt-0.5" />
+                }
                 items={employee.concerns}
               />
             </div>
@@ -66,7 +154,8 @@ const RecommendationsStep = ({ recommendations, onReset }) => {
               <div className="bg-gray-50 p-4 rounded-md border border-dashed border-blue-200">
                 <p className="text-sm text-gray-700">
                   <span className="mr-1 text-blue-600">✨</span>
-                  <strong className="text-blue-800">Why this pick?</strong> {employee.why_pick}
+                  <strong className="text-blue-800">Why this pick?</strong>{" "}
+                  {employee.why_pick}
                 </p>
               </div>
             )}
