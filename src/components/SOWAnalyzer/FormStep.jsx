@@ -1,6 +1,6 @@
 import React from "react";
 import { X, Calendar, Users, AlertCircle } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
 
 const FormStep = ({
   formData,
