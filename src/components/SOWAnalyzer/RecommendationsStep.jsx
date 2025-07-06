@@ -14,16 +14,6 @@ const RecommendationsStep = ({ recommendations, onReset }) => {
   const total = recommendations?.summary?.initial_shortlisted_candidates || 0;
   const sowData = recommendations?.sow_data || {};
 
-  // Debug logging - remove this after fixing
-  console.log("Full recommendations object:", recommendations);
-  console.log("SOW Data:", sowData);
-  console.log("Practice:", sowData.practice);
-  console.log("Technology:", sowData.technology);
-  console.log(
-    "Should show SOW section?",
-    sowData.practice || sowData.technology
-  );
-
   return (
     <div className="max-w-6xl mx-auto p-6">
       <div className="mb-6">

@@ -1,3 +1,4 @@
+// File: components/SOWAnalyzer/FormStep.jsx
 import React from "react";
 import { X, Calendar, Users, AlertCircle } from "lucide-react";
 import { useState } from "react";
