@@ -1,7 +1,6 @@
 // File: components/SOWAnalyzer/FormStep.jsx
-import React from "react";
+import React, { useState } from "react";
 import { X, Calendar, Users, AlertCircle } from "lucide-react";
-import { useState } from "react";
 
 const FormStep = ({
   formData,
@@ -12,7 +11,12 @@ const FormStep = ({
   onCancel,
 }) => {
   const [newTech, setNewTech] = useState("");
-  const update = (field, value) => setFormData({ ...formData, [field]: value });
+  const [localError, setLocalError] = useState(null);
+
+  const update = (field, value) => {
+    setFormData({ ...formData, [field]: value });
+    setLocalError(null); // Clear error on change
+  };
 
   const handleTechRemove = (index) => {
     const techs = [...(formData.technology || [])];
@@ -29,6 +33,42 @@ const FormStep = ({
     setNewTech("");
   };
 
+  const handleFormSubmit = () => {
+    const requiredFields = [
+      "name",
+      "manager",
+      "client",
+      "partner",
+      "status",
+      "practice",
+      "category",
+      "billingType",
+      "budgetedHours",
+      "startDate",
+      "endDate",
+      "keepResourcesAvailable",
+    ];
+
+    for (let field of requiredFields) {
+      if (
+        formData[field] === undefined ||
+        formData[field] === null ||
+        formData[field] === ""
+      ) {
+        setLocalError(`Please fill out the "${field}" field.`);
+        return;
+      }
+    }
+
+    if (!formData.technology || formData.technology.length === 0) {
+      setLocalError("Please add at least one technology.");
+      return;
+    }
+
+    setLocalError(null); // Clear any previous error
+    onSubmit(); // Proceed
+  };
+
   return (
     <div className="max-w-4xl mx-auto p-6">
       <div className="bg-white rounded-lg shadow-lg p-6">
@@ -39,40 +79,15 @@ const FormStep = ({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Text Inputs */}
           {[
-            {
-              label: "Name",
-              field: "name",
-              required: true,
-              placeholder: "Some Project",
-            },
-            {
-              label: "Manager",
-              field: "manager",
-              required: true,
-              placeholder: "Manager Name",
-            },
-            {
-              label: "Client",
-              field: "client",
-              required: true,
-              placeholder: "Client Name",
-            },
-            {
-              label: "Partner",
-              field: "partner",
-              required: true,
-              placeholder: "Partner Name",
-            },
-            {
-              label: "Status",
-              field: "status",
-              required: true,
-              placeholder: "Status",
-            },
-          ].map(({ label, field, required, placeholder }) => (
+            { label: "Name", field: "name", placeholder: "Some Project" },
+            { label: "Manager", field: "manager", placeholder: "Manager Name" },
+            { label: "Client", field: "client", placeholder: "Client Name" },
+            { label: "Partner", field: "partner", placeholder: "Partner Name" },
+            { label: "Status", field: "status", placeholder: "Status" },
+          ].map(({ label, field, placeholder }) => (
             <div key={field}>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                {label} {required && <span className="text-red-500">*</span>}
+                {label} <span className="text-red-500">*</span>
               </label>
               <div className="relative">
                 <input
@@ -100,6 +115,7 @@ const FormStep = ({
             field="practice"
             value={formData.practice}
             onChange={update}
+            required
             options={[
               "Artificial Intelligence",
               "Cloud Engineering",
@@ -244,7 +260,7 @@ const FormStep = ({
             <span className="text-red-500">*</span>
           </label>
           <div className="flex space-x-4">
-            {["Yes", "No"].map((label, idx) => (
+            {["Yes", "No"].map((label) => (
               <label key={label} className="flex items-center">
                 <input
                   type="radio"
@@ -263,16 +279,18 @@ const FormStep = ({
           </div>
         </div>
 
-        {error && (
+        {/* Error Section */}
+        {(error || localError) && (
           <div className="mt-4 p-4 bg-red-50 rounded-lg flex items-center space-x-2">
             <AlertCircle className="h-5 w-5 text-red-600" />
-            <span className="text-red-800">{error}</span>
+            <span className="text-red-800">{error || localError}</span>
           </div>
         )}
 
+        {/* Buttons */}
         <div className="mt-8 flex space-x-4">
           <button
-            onClick={onSubmit}
+            onClick={handleFormSubmit}
             disabled={loading}
             className="bg-blue-600 text-white px-6 py-2 rounded-md font-medium hover:bg-blue-700 disabled:opacity-50 flex items-center space-x-2"
           >

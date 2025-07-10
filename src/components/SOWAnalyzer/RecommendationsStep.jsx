@@ -35,14 +35,14 @@ const RecommendationsStep = ({ recommendations, onReset }) => {
     {
       title: "Testers",
       employees: testers,
-      icon: <Users className="h-5 w-5 text-amber-600 mr-2" />,
-      borderColor: "border-amber-500",
+      icon: <Users className="h-5 w-5 text-rose-600 mr-2" />,
+      borderColor: "border-rose-500",
     },
     {
       title: "Developers",
       employees: developers,
       icon: <Code2 className="h-5 w-5 text-green-600 mr-2" />,
-      borderColor: "border-green-500",
+      borderColor: "border-green-300",
     },
   ];
 
@@ -136,10 +136,10 @@ const RecommendationsStep = ({ recommendations, onReset }) => {
                             </span>
                             <span
                               className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                employee.recommendation_level ===
-                                "Highly recommended"
+                                employee.recommendation_level?.toLowerCase() ===
+                                "highly recommended"
                                   ? "bg-green-100 text-green-800"
-                                  : employee.recommendation_level === "Recommended"
+                                  : employee.recommendation_level === "recommended"
                                   ? "bg-blue-100 text-blue-800"
                                   : "bg-yellow-100 text-yellow-800"
                               }`}
