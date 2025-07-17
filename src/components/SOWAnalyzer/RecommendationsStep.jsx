@@ -17,13 +17,28 @@ const RecommendationsStep = ({ recommendations, onReset }) => {
   const total = recommendations?.summary?.initial_shortlisted_candidates || {};
   const sowData = recommendations?.sow_data || {};
 
-  // Role categorization by prefix of rank
-  const groupByRole = (rolePrefix) =>
-    allEmployees.filter((e) => e.rank.startsWith(rolePrefix));
+  // Role categorization by designation
+  const groupByRole = (employees) => {
+    const managers = [];
+    const testers = [];
+    const developers = [];
 
-  const managers = groupByRole("M");
-  const testers = groupByRole("T");
-  const developers = groupByRole("D");
+    employees.forEach((employee) => {
+      const designation = employee.designation?.toLowerCase() || '';
+      
+      if (designation.includes('manager')) {
+        managers.push(employee);
+      } else if (designation.includes('test')) {
+        testers.push(employee);
+      } else {
+        developers.push(employee);
+      }
+    });
+
+    return { managers, testers, developers };
+  };
+
+  const { managers, testers, developers } = groupByRole(allEmployees);
 
   const roleSections = [
     {
@@ -42,7 +57,7 @@ const RecommendationsStep = ({ recommendations, onReset }) => {
       title: "Developers",
       employees: developers,
       icon: <Code2 className="h-5 w-5 text-green-600 mr-2" />,
-      borderColor: "border-green-300",
+      borderColor: "border-green-500",
     },
   ];
 
@@ -110,7 +125,7 @@ const RecommendationsStep = ({ recommendations, onReset }) => {
             <div key={index} className="mb-8">
               <h3 className="text-2xl font-semibold text-gray-900 mb-4 flex items-center">
                 {icon}
-                {title}
+                {title} ({employees.length})
               </h3>
 
               <div className="grid gap-6">
@@ -126,10 +141,12 @@ const RecommendationsStep = ({ recommendations, onReset }) => {
                         </div>
                         <div>
                           <h3 className="text-xl font-bold text-gray-900">
-                            {employee.name}
+                            #{employee.rank} {employee.name}
                           </h3>
                           <div className="flex items-center space-x-4 text-sm text-gray-600">
-                            <span>Rank #{employee.rank}</span>
+                            <span className="bg-gray-200 px-3 py-1.5 rounded-md text-sm font-bold text-gray-800">
+                              {employee.designation}
+                            </span>
                             <span>
                               Match Score:{" "}
                               {(employee.match_score * 100).toFixed(0)}%
